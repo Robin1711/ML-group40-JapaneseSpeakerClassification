@@ -26,16 +26,33 @@ def proccess_x(dataset):
             start_idx = idx + 1
     return x
 
-def proccess_y_timestep(dataset):
+def proccess_train_y_timestep(dataset):
     y = []
     for i in range(len(dataset)):
         l = len(dataset[i])
         labels = np.zeros((l,9))
-        speakerIndex = np.ceil(i/30)
-        ## unfinished
+        speakerIndex = int(np.floor(i/30))
+        labels[:,speakerIndex] = 1
+        y.append(labels)
+    return y
 
-        
-# To be implemented
+def proccess_test_y_timestep(dataset):
+    y = []
+    speakerIndex = 0
+    blockCounter = 0
+    blockLengthes = [31, 35, 88, 44, 29, 24, 40, 50, 29]
+    for i in range(len(dataset)):
+        blockCounter += 1
+        if blockCounter == blockLengthes[speakerIndex] + 1:
+            speakerIndex += 1
+            blockCounter = 1
+        l = len(dataset[i])
+        labels = np.zeros((l,9));    
+        labels[:,speakerIndex] = 1
+        y.append(labels)
+    return y
+
+# To be implemented when/if needded
 def proccess_y_timeseries(dataset):
     pass
 
@@ -47,24 +64,11 @@ def load_w_label_timestep():
     train_x = np.asarray(proccess_x(raw_train),dtype=object)
     test_x = np.asarray(proccess_x(raw_test),dtype=object)
     
-    train_y = proccess_y_timestep(train_x)
-    test_y = proccess_y_timestep(test_x)
+    train_y = np.asarray(proccess_train_y_timestep(train_x))
+    test_y = np.asarray(proccess_test_y_timestep(test_x))
 
     return [train_x, train_y, test_x, test_y]
 
-
-
-#trainInputs = cell(270,1);
-#readindex = 0;
-#for c = 1:270
-#    readindex = readindex + 1;
-#    l = 0;    
-#    while aeTrain(readindex, 1) ~= 1.0
-#        l = l+1;
-#        readindex = readindex + 1;
-#    end
-#    trainInputs{c,1} = aeTrain(readindex-l:readindex-1,:);    
-#end
 
 ## this function returns the data with labels for each time searies, also one hot encoding.
 def load_w_label_timeseries():

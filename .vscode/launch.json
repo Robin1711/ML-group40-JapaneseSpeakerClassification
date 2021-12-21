@@ -16,7 +16,7 @@
             ]
         },
         {
-            "name": "Load data without timestep labels",
+            "name": "Load data with timeseries labels",
             "type": "python",
             "request": "launch",
             "program": "./data_loader.py",
