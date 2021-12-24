@@ -1,1 +1,0 @@
-print("Hello Japanese Speaker Classification Project!")
