@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-labels_per_timestep",
-                "False"
+                "True"
             ]
         },
         {
@@ -21,10 +21,6 @@
             "request": "launch",
             "program": "./data_loader.py",
             "console": "integratedTerminal",
-            "args": [
-                "-labels_per_timestep",
-                "True"
-            ]
         }
     ]
 }
