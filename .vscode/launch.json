@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "run models",
+            "type": "python",
+            "request": "launch",
+            "program": "./models.py",
+            "console": "integratedTerminal",
+        },
+        {
             "name": "Load data with timestep labels",
             "type": "python",
             "request": "launch",
