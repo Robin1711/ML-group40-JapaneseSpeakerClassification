@@ -18,16 +18,31 @@
             "program": "./data_loader.py",
             "console": "integratedTerminal",
             "args": [
-                "-labels_per_timestep",
-                "True"
+                "--label_type",
+                "timestep"
             ]
         },
         {
-            "name": "Load data with timeseries labels",
+            "name": "Load data with timeserise labels",
             "type": "python",
             "request": "launch",
             "program": "./data_loader.py",
             "console": "integratedTerminal",
+            "args": [
+                "--label_type",
+                "timeserise"
+            ]
+        },
+        {
+            "name": "Load data with salad labels",
+            "type": "python",
+            "request": "launch",
+            "program": "./data_loader.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--label_type",
+                "salad"
+            ]
         }
     ]
 }

@@ -5,9 +5,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 import numpy as np
 
-
-
-
 def kmeans(X_train, y_train):
     kmeans = KMeans(n_clusters=9, random_state=0).fit(X)
     kmeans.labels_
@@ -17,10 +14,10 @@ def knn(X_train, y_train):
     pass
 
 def randomForest(D, n_trees, split):
-    X_train = np.asarray(D[0])
-    y_train = np.asarray(D[1])
-    X_test = np.asarray(D[2])
-    y_test = np.asarray(D[3])
+    X_train = D[0]
+    y_train = D[1]
+    X_test = D[2]
+    y_test = D[3]
 
     model = RandomForestClassifier(n_estimators=n_trees, criterion=split)
     
@@ -29,20 +26,20 @@ def randomForest(D, n_trees, split):
     y_pred = model.predict(X_test)
 
     accuracy = metrics.accuracy_score(y_test, y_pred)
-    fScore = metrics.f1_score(y_test, y_pred)
+    #fScore = metrics.f1_score(y_test, y_pred, )
 
-    return [accuracy, fScore]
+    return [accuracy]
 
 def run_RandomForest():
-    D = preprocessing.get_data(label_type= "timeseries", preproccessing_steps = [])
+    D = preprocessing.get_data(label_type= "salad", preproccessing_steps = [])
 
     ## model parameters:
     n_trees = 100
     criterion = 'gini'
-    accuracy, fScore = randomForest(D, n_trees,criterion)
+    accuracy = randomForest(D, n_trees,criterion)
 
     print(accuracy)
-    print(fScore)
+    #print(fScore)
 
     #with MLflow record the parameretes and resutls
 

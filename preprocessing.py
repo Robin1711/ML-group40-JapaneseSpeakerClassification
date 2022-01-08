@@ -18,6 +18,8 @@ def get_data(label_type:str = "timestep", preproccessing_steps:list = []) -> lis
         D = data_loader.load_w_label_timestep()
     elif label_type == "timeseries":
         D = data_loader.load_w_label_timeseries()
+    elif label_type == "salad":
+        D = data_loader.load_w_label_salad()
     else:
         print("label type not implemented")
         exit()
