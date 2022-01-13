@@ -1,0 +1,15 @@
+artifact_uri: ./mlruns/0/facde551a0774a27a075d745b2007f7c/artifacts
+end_time: 1641811620205
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: deleted
+name: ''
+run_id: facde551a0774a27a075d745b2007f7c
+run_uuid: facde551a0774a27a075d745b2007f7c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1641811618183
+status: 3
+tags: []
+user_id: andrei

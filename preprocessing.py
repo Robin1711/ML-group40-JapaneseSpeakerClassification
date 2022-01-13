@@ -1,5 +1,6 @@
 import data_loader
 import argparse
+import numpy as np
 
 def PCA():
     pass
@@ -10,19 +11,21 @@ def LDA():
 def tSNE():
     pass
 
-def get_data(label_type:str = "timestep", preproccessing_steps:list = []) -> list:
+def get_data(D = None, label_type:str = "timestep", preproccessing_steps:list = [], ) -> list:
     """Args:
-        label_type: 
+        D: a specific data set to avoid possible data leakage during cross validation
+        label_type: timestep/timeseries/salad
     """
-    if label_type == "timestep":
-        D = data_loader.load_w_label_timestep()
-    elif label_type == "timeseries":
-        D = data_loader.load_w_label_timeseries()
-    elif label_type == "salad":
-        D = data_loader.load_w_label_salad()
-    else:
-        print("label type not implemented")
-        exit()
+    if D == None:
+        if label_type == "timestep":
+            D = data_loader.load_w_label_timestep()
+        elif label_type == "timeseries":
+            D = data_loader.load_w_label_timeseries()
+        elif label_type == "salad":
+            D = data_loader.load_w_label_salad()
+        else:
+            print("label type not implemented")
+            exit()
     
     for step in preproccessing_steps:
         #if step == "pca":
