@@ -110,7 +110,7 @@ def gmlvq(train_data, train_labels):
             "max_runs": max_runs,
             "k": k,
             "step_size": step_size
-        }
+        },
         random_state=1428
     )
 
