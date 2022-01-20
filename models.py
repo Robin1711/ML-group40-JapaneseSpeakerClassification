@@ -115,8 +115,9 @@ def gmlvq(train_data, train_labels):
     )
 
     model.fit(train_data, train_labels)
+    return(model)
 
-def run_gmlvq(test_data, test_labels):
+def run_gmlvq(test_data, test_labels, model):
     predicted_labels = model.predict(test_data)
     print("GMLVQ:\n" + classification_report(test_labels, predicted_labels))
     return(predicted_labels)
