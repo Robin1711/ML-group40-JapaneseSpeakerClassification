@@ -78,10 +78,10 @@ def randomForest(n_trees, criterion):
 
     model = RandomForestClassifier(n_estimators=n_trees, criterion=criterion)
 
-    score,_,pvalue = permutation_test_score(model,X_train,y_train,scoring='accuracy',cv=StratifiedShuffleSplit(),n_jobs=-1)
-    print("permutation test: [accruacy: %f, pvalue: %f]" % (score,pvalue))
-    scores = cross_val_score(model,X_train,y_train,scoring="accuracy",cv=StratifiedShuffleSplit(),n_jobs=-1)
-    print("cross val: [accruacy: %f]" % (np.mean(scores)))
+    #score,_,pvalue = permutation_test_score(model,X_train,y_train,scoring='accuracy',cv=StratifiedShuffleSplit(),n_jobs=-1)
+    #print("permutation test: [accruacy: %f, pvalue: %f]" % (score,pvalue))
+    #scores = cross_val_score(model,X_train,y_train,scoring="accuracy",cv=StratifiedShuffleSplit(),n_jobs=-1)
+    #print("cross val: [accruacy: %f]" % (np.mean(scores)))
 
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
