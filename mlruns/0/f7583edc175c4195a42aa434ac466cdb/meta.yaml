@@ -1,0 +1,15 @@
+artifact_uri: ./mlruns/0/f7583edc175c4195a42aa434ac466cdb/artifacts
+end_time: 1643724593708
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: f7583edc175c4195a42aa434ac466cdb
+run_uuid: f7583edc175c4195a42aa434ac466cdb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1643724593554
+status: 3
+tags: []
+user_id: Robin
