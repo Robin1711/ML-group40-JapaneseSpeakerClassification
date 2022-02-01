@@ -41,7 +41,6 @@ def proccess_train_y(dataset, timestep = True):
         else:
             labels = list(np.zeros(9))
             labels[speakerIndex] = 1
-            labels = labels.tolist()
 
 
         y.append(labels)
@@ -65,7 +64,6 @@ def proccess_test_y(dataset, timestep = True):
         else:
             labels = list(np.zeros(9))
             labels[speakerIndex] = 1
-            labels = labels.tolist()
 
         y.append(labels)
     return y
@@ -138,4 +136,3 @@ if __name__ == '__main__':
         load_w_label_salad()
     else:
         print("loading format has not implemented")
-    
