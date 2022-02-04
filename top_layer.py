@@ -65,7 +65,7 @@ if __name__ == '__main__':
     elif MODEL_TYPE == "ESN":
         model_layer.echo_state_network(D)
     else:
-        exit("Pleas specify a model")
+        exit("Please specify a model")
 
     params["label_type"] = LABEL_TYPE
     params["preproccessing_steps"] = PREPROCESSING_STEPS
