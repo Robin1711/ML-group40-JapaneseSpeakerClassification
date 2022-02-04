@@ -82,8 +82,6 @@ def truncate_signals(data, truncate_to=TRUNCATE_LENGTH_TRAIN, truncation_type="B
 
     return truncated_data
 
-    pass
-
 """
 Transposes the timeseries matrix
 N x no_energies x channel 
