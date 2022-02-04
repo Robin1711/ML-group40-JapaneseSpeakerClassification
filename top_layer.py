@@ -1,5 +1,4 @@
 import time
-from itertools import chain
 import mlflow
 from sklearn.metrics import classification_report
 
@@ -9,9 +8,10 @@ import preprocessing
 import model_layer
 
 LABEL_TYPE = "timeseries"       # [salad, timeseries]
-PREPROCESSING_STEPS = []
-MODEL_TYPE = "Bagging"         # [RandomForest, SVC, Ensemble, Bagging]
-SIGNAL_LENGTH = 22
+PREPROCESSING_STEPS = ["transpose","auto_reg_coeff","flatten","onehot-to-labels"] #["pad","truncate","transpose","flatten","auto_reg_coeff","pca","onehot-to-labels"]
+MODEL_TYPE = "SVC"         # [RandomForest, SVC, Ensemble, Bagging, NaiveBayes, ESN]
+SIGNAL_LENGTH = 11
+NO_LEAKAGE_CROSSVALIDATION = False
 
 
 def run_gmlvq(test_data, test_labels, model):
@@ -38,19 +38,20 @@ if __name__ == '__main__':
     start_time = time.time()
     print("Starting..")
 
+    #feature_stationarity = np.zeros(12)
+#
+    #for i, recording in enumerate(D[0]):
+    #    for j, feature in enumerate(recording):
+    #        stationarityTest = adfuller(D[0][i][j], autolag='AIC')
+    #        if stationarityTest[1] <= 0.05:
+    #            feature_stationarity[j] += 1
+    #
+    ## Check the value of p-values
+    #print(feature_stationarity)
+
+    
     D = preprocessing.get_data(label_type=LABEL_TYPE, preproccessing_steps=PREPROCESSING_STEPS)
-    D[1] = data_formatting.transform_labelvectors_to_labels(D[1])
-    D[3] = data_formatting.transform_labelvectors_to_labels(D[3])
-
-    if LABEL_TYPE == "timeseries":
-        D[0] = data_formatting.pad_truncate_transpose_data(D[0], signal_length=SIGNAL_LENGTH)
-        D[0] = [list(chain(*example)) for example in D[0]]
-        D[2] = data_formatting.pad_truncate_transpose_data(D[2], signal_length=SIGNAL_LENGTH)
-        D[2] = [list(chain(*example)) for example in D[2]]
-
-    print("Loaded data")
-    params, metrics = dict(), dict()
-
+    
     if MODEL_TYPE == "RandomForest":
         params, metrics, trained_model = model_layer.random_forest(D)
     elif MODEL_TYPE == "SVC":
@@ -59,6 +60,10 @@ if __name__ == '__main__':
         params, metrics, trained_model = model_layer.ensemble_classifier(D)
     elif MODEL_TYPE == "Bagging":
         params, metrics, trained_model = model_layer.bagging_classifier(D)
+    elif MODEL_TYPE == "NaiveBayes":
+        params, metrics, trained_model = model_layer.naive_bayes(D)
+    elif MODEL_TYPE == "ESN":
+        model_layer.echo_state_network(D)
     else:
         exit("Pleas specify a model")
 

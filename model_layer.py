@@ -6,6 +6,8 @@ from sklearn.ensemble import RandomForestClassifier, VotingClassifier, BaggingCl
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from RC.modules import RC_model
 
 # GMLVQ libraries
 import sklvq
@@ -20,7 +22,8 @@ PARAMS_ENSEMBLE = {"classifier": "Ensemble Voting Classifier", "voting": 'hard'}
 PARAMS_KNN = {"classifier": "K Nearest Neighbors", "n_neighbors": 7, "cpus": 3}
 PARAMS_DTC = {"classifier": "Decision Tree", "max_depth": 8}
 PARAMS_BC = {"classifier": "Bagging Classifier - SVC", "n_estimators": 5, "max_samples": 0.8, "max_features": 1.0}
-
+PARAMS_NB = {"classifier": "Naive Bayes: Gaussian"}
+PARAMS_RC = {"classifier": "Reservior Computing", "n_internal_units": 450, "spectral_radius": 0.59, "leak": 0.6, "connectivity": 0.25, "input_scaling": 0.1, "noise_level": 0.01, "n_drop":5, "mts_rep": "reservoir", "w_ridge_embedding": 10.0, "readout_type":'lin', "w_ridge": 5.0  }
 
 def random_forest(data):
     x_train, y_train, x_test, y_test = data
@@ -34,6 +37,35 @@ def random_forest(data):
     metrics = helper_layer.evaluate_model(x_train, y_train, x_test, y_test, trained_model)
     return PARAMS_RF, metrics, trained_model
 
+def echo_state_network(data):
+    x_train, y_train, x_test, y_test = data
+    model = RC_model(
+        reservoir=None,     
+        n_internal_units=PARAMS_RC['n_internal_units'],
+        spectral_radius=PARAMS_RC['spectral_radius'],
+        leak=PARAMS_RC['leak'],
+        connectivity=PARAMS_RC['connectivity'],
+        input_scaling=PARAMS_RC['input_scaling'],
+        noise_level=PARAMS_RC['noise_level'],
+        n_drop=PARAMS_RC['n_drop'],
+        mts_rep=PARAMS_RC['mts_rep'],
+        w_ridge_embedding=PARAMS_RC['w_ridge_embedding'],
+        readout_type=PARAMS_RC['readout_type'],            
+        w_ridge=PARAMS_RC['w_ridge']              
+    )
+
+    tr_time = model.train(np.asarray(x_train), np.asarray(y_train))
+    print('Training time = %.2f seconds'%tr_time)
+
+    accuracy, f1 = model.test(np.asarray(x_test), np.asarray(y_test))
+    print('Accuracy = %.3f, F1 = %.3f'%(accuracy, f1))
+
+def naive_bayes(data):
+    x_train, y_train, x_test, y_test = data
+    model = GaussianNB()
+    trained_model = helper_layer.model_cv_train(x_train, y_train, model)
+    metrics = helper_layer.evaluate_model(x_train, y_train, x_test, y_test, trained_model)
+    return PARAMS_NB, metrics, trained_model
 
 def support_vector_machine(data):
     x_train, y_train, x_test, y_test = data
