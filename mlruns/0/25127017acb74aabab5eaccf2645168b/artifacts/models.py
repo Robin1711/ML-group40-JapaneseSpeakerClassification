@@ -96,7 +96,11 @@ def randomForest(n_trees, criterion):
 
     return params, metrics
 
-def gmlvq(train_data, train_labels_unparsed, max_runs, k, step_size):
+def gmlvq(train_data, train_labels_unparsed):
+    #temporarily hardcoded values
+    max_runs = 100
+    k = 2
+    step_size = np.array([0.1, 0.05])
 
     train_labels = []
 
@@ -147,18 +151,8 @@ if __name__ == '__main__':
     params["label type"] = label_type
     params["preproccessing steps"] = preproccessing_steps
 
-    #temporarily hardcoded values
-    max_runs = 100
-    k = 2
-    step_size = np.array([0.1, 0.05])
-
-    for max_runs in range(10, 500, 10):
-        for k in range(2, 6, 1):
-            print("max_runs: " + str(max_runs))
-            print("K: " + str(k))
-
-            gmlvqModel = gmlvq(X_train, y_train, max_runs, k, step_size)
-            predicted_labels = run_gmlvq(X_test, y_test, gmlvqModel)
+    gmlvqModel = gmlvq(X_train, y_train)
+    predicted_labels = run_gmlvq(X_test, y_test, gmlvqModel)
 
     mlflow.log_params(params) # log parameters
     mlflow.log_metrics(metrics) # log metrics

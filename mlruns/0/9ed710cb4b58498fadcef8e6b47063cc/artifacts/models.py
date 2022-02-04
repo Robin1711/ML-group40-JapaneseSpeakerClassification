@@ -96,15 +96,14 @@ def randomForest(n_trees, criterion):
 
     return params, metrics
 
-def gmlvq(train_data, train_labels_unparsed, max_runs, k, step_size):
-
-    train_labels = []
-
-    for entry in train_labels_unparsed:
-        train_labels.append(entry.index(1.0))
+def gmlvq(train_data, train_labels):
+    #temporarily hardcoded values
+    max_runs = 100
+    k = 2
+    step_size = np.array([0.1, 0.05])
 
     model = GMLVQ(
-        distance_type="adaptive-squared-euclidean",
+        distance_type="adaptive-squared-euclidian",
         activation_type="identity",
         solver_type="waypoint-gradient-descent",
         solver_params={
@@ -118,12 +117,7 @@ def gmlvq(train_data, train_labels_unparsed, max_runs, k, step_size):
     model.fit(train_data, train_labels)
     return(model)
 
-def run_gmlvq(test_data, test_labels_unparsed, model):
-    test_labels = []
-    for entry in test_labels_unparsed:
-        test_labels.append(entry.index(1.0))
-
-
+def run_gmlvq(test_data, test_labels, model):
     predicted_labels = model.predict(test_data)
     print("GMLVQ:\n" + classification_report(test_labels, predicted_labels))
     return(predicted_labels)
@@ -146,19 +140,6 @@ if __name__ == '__main__':
     params, metrics = randomForest(n_trees=100, criterion="gini")
     params["label type"] = label_type
     params["preproccessing steps"] = preproccessing_steps
-
-    #temporarily hardcoded values
-    max_runs = 100
-    k = 2
-    step_size = np.array([0.1, 0.05])
-
-    for max_runs in range(10, 500, 10):
-        for k in range(2, 6, 1):
-            print("max_runs: " + str(max_runs))
-            print("K: " + str(k))
-
-            gmlvqModel = gmlvq(X_train, y_train, max_runs, k, step_size)
-            predicted_labels = run_gmlvq(X_test, y_test, gmlvqModel)
 
     mlflow.log_params(params) # log parameters
     mlflow.log_metrics(metrics) # log metrics

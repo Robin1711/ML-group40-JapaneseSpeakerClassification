@@ -1,0 +1,15 @@
+artifact_uri: ./mlruns/0/b17b6af6958241af86f7daf60d0fdbb7/artifacts
+end_time: 1643926632078
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: b17b6af6958241af86f7daf60d0fdbb7
+run_uuid: b17b6af6958241af86f7daf60d0fdbb7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1643926631978
+status: 3
+tags: []
+user_id: alfie
