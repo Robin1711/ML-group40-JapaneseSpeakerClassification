@@ -105,7 +105,7 @@ def load_w_label_salad():
     return [train_x, train_y, test_x, test_y]
 
 
-## this function returns the data with labels for each time searies one hot encoding.
+## this function returns the data with labels for each time series one hot encoding.
 def load_w_label_timeseries():
     raw_train = read_raw_file_lines(train_data_path)
     raw_test = read_raw_file_lines(test_data_path)
