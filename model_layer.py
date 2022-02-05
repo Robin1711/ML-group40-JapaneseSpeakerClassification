@@ -3,6 +3,7 @@ import numpy as np
 # Classifiers
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier, BaggingClassifier
+from sklearn.metrics import classification_report, roc_curve, roc_auc_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -40,7 +41,7 @@ def random_forest(data):
 def echo_state_network(data):
     x_train, y_train, x_test, y_test = data
     model = RC_model(
-        reservoir=None,     
+        reservoir=None,
         n_internal_units=PARAMS_RC['n_internal_units'],
         spectral_radius=PARAMS_RC['spectral_radius'],
         leak=PARAMS_RC['leak'],
@@ -50,8 +51,8 @@ def echo_state_network(data):
         n_drop=PARAMS_RC['n_drop'],
         mts_rep=PARAMS_RC['mts_rep'],
         w_ridge_embedding=PARAMS_RC['w_ridge_embedding'],
-        readout_type=PARAMS_RC['readout_type'],            
-        w_ridge=PARAMS_RC['w_ridge']              
+        readout_type=PARAMS_RC['readout_type'],
+        w_ridge=PARAMS_RC['w_ridge']
     )
 
     tr_time = model.train(np.asarray(x_train), np.asarray(y_train))
@@ -125,14 +126,18 @@ def kmeans(X_train, y_train):
     kmeans.predict([[0, 0], [12, 3]])
 
 
-def gmlvq(train_data, train_labels):
-    # temporarily hardcoded values
-    max_runs = 100
-    k = 2
-    step_size = np.array([0.1, 0.05])
+def gmlvq(data, max_runs, k, step_size):
+
+    x_train, y_train, x_test, y_test = data
+
+    train_labels = []
+
+    #for entry in y_train:
+    #    print(entry)
+    #    train_labels.append(entry.index(1.0))
 
     model = GMLVQ(
-        distance_type="adaptive-squared-euclidian",
+        distance_type="adaptive-squared-euclidean",
         activation_type="identity",
         solver_type="waypoint-gradient-descent",
         solver_params={
@@ -143,5 +148,14 @@ def gmlvq(train_data, train_labels):
         random_state=1428
     )
 
-    model.fit(train_data, train_labels)
-    return (model)
+    model.fit(x_train, y_train)
+
+    test_labels = []
+    #for entry in y_test:
+    #    print(entry)
+    #    test_labels.append(entry.index(1.0))
+
+
+    predicted_labels = model.predict(x_test)
+    print("GMLVQ:\n" + classification_report(y_test, predicted_labels))
+    return(predicted_labels, model)

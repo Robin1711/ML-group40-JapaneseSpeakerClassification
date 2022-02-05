@@ -1,6 +1,7 @@
 import time
 import mlflow
 from sklearn.metrics import classification_report
+import numpy as np
 
 # Self defined modules
 import data_formatting
@@ -9,15 +10,9 @@ import model_layer
 
 LABEL_TYPE = "timeseries"       # [salad, timeseries]
 PREPROCESSING_STEPS = ["transpose","auto_reg_coeff","flatten","onehot-to-labels"] #["pad","truncate","transpose","flatten","auto_reg_coeff","pca","onehot-to-labels"]
-MODEL_TYPE = "SVC"         # [RandomForest, SVC, Ensemble, Bagging, NaiveBayes, ESN]
+MODEL_TYPE = "GMLVQ"         # [RandomForest, SVC, Ensemble, Bagging, NaiveBayes, ESN]
 SIGNAL_LENGTH = 11
 NO_LEAKAGE_CROSSVALIDATION = False
-
-
-def run_gmlvq(test_data, test_labels, model):
-    predicted_labels = model.predict(test_data)
-    print("GMLVQ:\n" + classification_report(test_labels, predicted_labels))
-    return(predicted_labels)
 
 
 def log_results(params, metrics):
@@ -49,9 +44,9 @@ if __name__ == '__main__':
     ## Check the value of p-values
     #print(feature_stationarity)
 
-    
+
     D = preprocessing.get_data(label_type=LABEL_TYPE, preproccessing_steps=PREPROCESSING_STEPS)
-    
+
     if MODEL_TYPE == "RandomForest":
         params, metrics, trained_model = model_layer.random_forest(D)
     elif MODEL_TYPE == "SVC":
@@ -64,6 +59,8 @@ if __name__ == '__main__':
         params, metrics, trained_model = model_layer.naive_bayes(D)
     elif MODEL_TYPE == "ESN":
         model_layer.echo_state_network(D)
+    elif MODEL_TYPE == "GMLVQ":
+        predicted_labels, trained_model = model_layer.gmlvq(D, 100, 2, np.array([0.1, 0.05]))
     else:
         exit("Please specify a model")
 
