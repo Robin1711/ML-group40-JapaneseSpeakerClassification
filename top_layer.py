@@ -60,7 +60,7 @@ if __name__ == '__main__':
     elif MODEL_TYPE == "ESN":
         model_layer.echo_state_network(D)
     elif MODEL_TYPE == "GMLVQ":
-        predicted_labels, trained_model = model_layer.gmlvq(D, 100, 2, np.array([0.1, 0.05]))
+        params, metrics, trained_model = model_layer.gmlvq(D)
     else:
         exit("Please specify a model")
 

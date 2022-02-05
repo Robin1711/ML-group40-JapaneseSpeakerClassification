@@ -25,6 +25,7 @@ PARAMS_DTC = {"classifier": "Decision Tree", "max_depth": 8}
 PARAMS_BC = {"classifier": "Bagging Classifier - SVC", "n_estimators": 5, "max_samples": 0.8, "max_features": 1.0}
 PARAMS_NB = {"classifier": "Naive Bayes: Gaussian"}
 PARAMS_RC = {"classifier": "Reservior Computing", "n_internal_units": 450, "spectral_radius": 0.59, "leak": 0.6, "connectivity": 0.25, "input_scaling": 0.1, "noise_level": 0.01, "n_drop":5, "mts_rep": "reservoir", "w_ridge_embedding": 10.0, "readout_type":'lin', "w_ridge": 5.0  }
+PARAMS_GMLVQ = {"classifier": "GMLVQ", "max_runs": 100, "k": 2, "step_size": np.array([0.1, 0.05])}
 
 def random_forest(data):
     x_train, y_train, x_test, y_test = data
@@ -116,7 +117,7 @@ def bagging_classifier(data):
 
     trained_model = helper_layer.model_cv_train(x_train, y_train, bagging_model)
     metrics = helper_layer.evaluate_model(x_train, y_train, x_test, y_test, trained_model)
-    return PARAMS_BC, metrics, trained_model
+    return PARAMS_BC, trained_model
 
 
 # K Means Classifier => Unused?
@@ -126,36 +127,25 @@ def kmeans(X_train, y_train):
     kmeans.predict([[0, 0], [12, 3]])
 
 
-def gmlvq(data, max_runs, k, step_size):
+def gmlvq(data):
 
     x_train, y_train, x_test, y_test = data
 
     train_labels = []
 
-    #for entry in y_train:
-    #    print(entry)
-    #    train_labels.append(entry.index(1.0))
-
-    model = GMLVQ(
+    trained_model = GMLVQ(
         distance_type="adaptive-squared-euclidean",
         activation_type="identity",
         solver_type="waypoint-gradient-descent",
         solver_params={
-            "max_runs": max_runs,
-            "k": k,
-            "step_size": step_size
+            "max_runs": PARAMS_GMLVQ["max_runs"],
+            "k": PARAMS_GMLVQ["k"],
+            "step_size": PARAMS_GMLVQ["step_size"]
         },
         random_state=1428
     )
 
-    model.fit(x_train, y_train)
+    trained_model.fit(x_train, y_train)
 
-    test_labels = []
-    #for entry in y_test:
-    #    print(entry)
-    #    test_labels.append(entry.index(1.0))
-
-
-    predicted_labels = model.predict(x_test)
-    print("GMLVQ:\n" + classification_report(y_test, predicted_labels))
-    return(predicted_labels, model)
+    metrics = helper_layer.evaluate_model(x_train, y_train, x_test, y_test, trained_model)
+    return(PARAMS_GMLVQ, metrics, trained_model)
