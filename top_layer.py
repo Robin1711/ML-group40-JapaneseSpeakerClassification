@@ -10,8 +10,8 @@ import model_layer
 
 LABEL_TYPE = "timeseries"       # [salad, timeseries]
 SIGNAL_LENGTH = 22
-PREPROCESSING_STEPS = [["pad","BACK",25],["truncate","BACK",25],["transpose"],["flatten"],["onehot-to-labels"]]  #["pad","truncate","transpose","flatten","auto_reg_coeff","pca","onehot-to-labels"]
-MODEL_TYPE = "GMLVQ"         # [RandomForest, SVC, Ensemble, Bagging, NaiveBayes, ESN]
+PREPROCESSING_STEPS = [["pad","BACK",15],["truncate","BACK",15],["transpose"],["flatten"],["onehot-to-labels"]],  #["pad","truncate","transpose","flatten","auto_reg_coeff","pca","onehot-to-labels"]
+MODEL_TYPE = "Bagging"         # [RandomForest, SVC, Ensemble, Bagging, NaiveBayes, ESN]
 
 
 

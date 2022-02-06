@@ -4,11 +4,13 @@ import preprocessing
 from top_layer import log_results
 import model_layer
 import numpy as np
+from sklearn.svm import SVC
+from skopt.callbacks import EarlyStopper
 
 
 LABEL_TYPE = "timeseries"       # [salad, timeseries]
 PREPROCESSING_STEPS = [["pad","BACK",25],["truncate","BACK",25],["transpose"],["flatten"],["onehot-to-labels"]] #["pad","truncate","transpose","flatten","auto_reg_coeff","pca","onehot-to-labels"]
-MODEL_TYPES = ["RandomForest", "SVC", "KNN", "DecidionTree", "Bagging"]         # [RandomForest, SVC, Ensemble, Bagging, NaiveBayes, ESN]
+MODEL_TYPES = ["DecidionTree", "RandomForest", "SVC", "KNN", "Bagging"]         # "RandomForest", "SVC", "KNN", "DecidionTree",
 
 PREPROCESSING_STEPS_GENERAL = [
 [["pad","BACK",15],["truncate","BACK",15],["transpose"],["flatten"],["onehot-to-labels"]],
@@ -87,9 +89,9 @@ DTC_SPACE = [
     skopt.space.Integer(1, 12, name='max_depth', prior='uniform')
 ]
 BC_SPACE = [
-    skopt.space.Integer(5, 100, name ="n_estimators"),
-    skopt.space.Real(0.1, 5, name = "max_samples"),
-    skopt.space.Real(0.1, 5, name = "max_features")
+    skopt.space.Integer(5, 100, name ="n_estimators", prior='uniform'),
+    skopt.space.Real(0.01, 1.0, name = "max_samples", prior='uniform'),
+    skopt.space.Real(0.01, 1.0, name = "max_features", prior='uniform')
 ]
 RC_SPACE = [
     skopt.space.Integer(1, 20, name = "n_drop", prior='uniform'),
@@ -110,6 +112,17 @@ RC_SPACE = [
     skopt.space.Real(1, 100, name = "w_ridge", prior='uniform')
 ]
 
+class StoppingCriterion(EarlyStopper):
+    def __init__(self, delta=0.05, n_best=10):
+        super(EarlyStopper, self).__init__()
+        self.delta = delta
+        self.n_best = n_best
+    def _criterion(self, result):   
+        if len(result.func_vals) >= self.n_best:
+            func_vals = np.sort(result.func_vals)
+            worst = func_vals[self.n_best - 1]
+            best = func_vals[0]
+            return abs((best - worst)/worst) < self.delta
 
 def train_evaluate( D, model,params):
     if model == "RandomForest":
@@ -165,27 +178,46 @@ if __name__ == '__main__':
         D_name = ' '.join(map(str,preprocess))
         for model in MODEL_TYPES:
             if model == "RandomForest":
-                results = skopt.gbrt_minimize(objectiveRF, RF_SPACE, n_calls=100, n_jobs=3)
-                skopt.dump(results, 'opt/RF/D_name.pkl')
+                try:
+                    results = skopt.gbrt_minimize(objectiveRF, RF_SPACE, n_calls=100, n_jobs=3, callback = skopt.callbacks.CheckpointSaver('opt/RF/'+D_name+'.pkl', store_objective=False))
+                    skopt.dump(results, 'opt/RF/'+D_name+'.pkl', store_objective=False)
+                except:
+                    pass
             elif model == "SVC":
-                results = skopt.gbrt_minimize(objectiveSVC, SVC_SPACE, n_calls=100, n_jobs=3)
-                skopt.dump(results, 'opt/SVC/D_name.pkl')
+                try:
+                    results = skopt.gbrt_minimize(objectiveSVC, SVC_SPACE, n_calls=100, n_jobs=3, callback = skopt.callbacks.CheckpointSaver('opt/SVC/'+D_name+'.pkl', store_objective=False))
+                    skopt.dump(results, 'opt/SVC/'+D_name+'.pkl', store_objective=False)
+                except:
+                    pass
             elif model == "KNN":
-                results = skopt.gbrt_minimize(objectiveKNN, KNN_SPACE, n_calls=100, n_jobs=3)
-                skopt.dump(results, 'opt/KNN/D_name.pkl')
+                try:
+                    results = skopt.gbrt_minimize(objectiveKNN, KNN_SPACE, n_calls=100, n_jobs=3, callback = skopt.callbacks.CheckpointSaver('opt/KNN/'+D_name+'.pkl', store_objective=False))
+                    skopt.dump(results, 'opt/KNN/'+D_name+'.pkl', store_objective=False)
+                except:
+                    pass
             elif model == "Bagging":
-                results = skopt.gbrt_minimize(objectiveBC, BC_SPACE, n_calls=100, n_jobs=3)
-                skopt.dump(results, 'opt/BC/D_name.pkl')
+                try:
+                    results = skopt.gbrt_minimize(objectiveBC, BC_SPACE, n_calls=100, n_jobs=3, callback = skopt.callbacks.CheckpointSaver('opt/BC/'+D_name+'.pkl', store_objective=False))
+                    skopt.dump(results, 'opt/BC/'+D_name+'.pkl', store_objective=False)
+                except:
+                    pass
             elif model == "DecidionTree":
-                results = skopt.gbrt_minimize(objectiveDTC, DTC_SPACE, n_calls=100, n_jobs=3)
-                skopt.dump(results, 'opt/DTC/D_name.pkl')
+                try:
+                    results = skopt.gbrt_minimize(objectiveDTC, DTC_SPACE, n_calls=100, n_jobs=3, callback = skopt.callbacks.CheckpointSaver('opt/DTC/'+D_name+'.pkl', store_objective=False))
+                    skopt.dump(results, 'opt/DTC/'+D_name+'.pkl', store_objective=False)
+                except:
+                    pass
 
-        for preprocess in PREPROCESSING_STEPS_ESN:
-            D = preprocessing.get_data(label_type=LABEL_TYPE, preproccessing_steps=preprocess)
-            D_name = ' '.join(map(str,preprocess))
-        
-            results = skopt.gbrt_minimize(objectiveRF, RC_SPACE, n_calls=100, n_jobs=3)
-            skopt.dump(results, 'opt/ESN/D_name.pkl')
+
+
+
+
+    #for preprocess in PREPROCESSING_STEPS_ESN:
+    #    D = preprocessing.get_data(label_type=LABEL_TYPE, preproccessing_steps=preprocess)
+    #    D_name = ' '.join(map(str,preprocess))
+    
+    #    results = skopt.gbrt_minimize(objectiveRF, RC_SPACE, n_calls=100, n_jobs=3)
+    #    skopt.dump(results, 'opt/ESN/'+D_name+'.pkl', store_objective=False)
                 
 
     end_time = time.time()

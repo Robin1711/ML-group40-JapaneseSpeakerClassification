@@ -6,7 +6,10 @@ import time
 import random
 
 from sklearn import metrics as sk_metrics
+from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, permutation_test_score, StratifiedShuffleSplit, cross_val_score, ShuffleSplit
+import warnings
+warnings.filterwarnings("error")
 
 # Random Seed
 random.seed(2022)
@@ -33,11 +36,15 @@ def model_cv_train(x_train, y_train, model=None, trained=False):
 
     print("Cross Validating Model..")
     cv_start_time = time.time()
-    scores = cross_val_score(model, x_train, y_train
+    try:
+        scores = cross_val_score(model, x_train, y_train
                              , scoring="accuracy"
                              , cv=CV
                              , n_jobs=N_CPUS
                              , verbose=2)
+    except:
+        model = DummyClassifier(strategy="most_frequent")
+        scores = [0.5]
     print(f"Cross Validation Elapsed time: {time.time() - cv_start_time}")
     print(f"Cross Validation: [accuracy: {np.average(scores)}]")
 

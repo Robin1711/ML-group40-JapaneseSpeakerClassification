@@ -37,6 +37,8 @@ def get_data(D = None, label_type:str = "timestep", preproccessing_steps:list = 
             print("label type not implemented")
             exit()
     
+    if type(preproccessing_steps) == tuple:
+        preproccessing_steps = preproccessing_steps[0]
     for step in preproccessing_steps:
         if step[0] == "pad":
             D[0] = data_formatting.pad_signals(D[0], padding_type=step[1], padding_to=step[2])
