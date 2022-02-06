@@ -1,0 +1,1 @@
+[['pad', 'BACK', 22], ['truncate', 'BACK', 22], ['transpose'], ['flatten'], ['onehot-to-labels']]

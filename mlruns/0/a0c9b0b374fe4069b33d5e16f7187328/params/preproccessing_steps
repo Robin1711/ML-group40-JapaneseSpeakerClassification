@@ -1,0 +1,1 @@
+[['pad', 'BACK', 11], ['truncate', 'BACK', 11], ['auto_reg_coeff'], ['flatten'], ['onehot-to-labels']]

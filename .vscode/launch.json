@@ -6,6 +6,13 @@
     "configurations": [
 
         {
+            "name": "run optimise.py",
+            "type": "python",
+            "request": "launch",
+            "program": "./optimise.py",
+            "console": "integratedTerminal",
+        },
+        {
             "name": "run models.py",
             "type": "python",
             "request": "launch",

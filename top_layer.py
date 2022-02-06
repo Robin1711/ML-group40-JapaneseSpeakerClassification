@@ -9,10 +9,10 @@ import preprocessing
 import model_layer
 
 LABEL_TYPE = "timeseries"       # [salad, timeseries]
-PREPROCESSING_STEPS = ["transpose","auto_reg_coeff","flatten","onehot-to-labels"] #["pad","truncate","transpose","flatten","auto_reg_coeff","pca","onehot-to-labels"]
+SIGNAL_LENGTH = 22
+PREPROCESSING_STEPS = [["pad","BACK",25],["truncate","BACK",25],["transpose"],["flatten"],["onehot-to-labels"]]  #["pad","truncate","transpose","flatten","auto_reg_coeff","pca","onehot-to-labels"]
 MODEL_TYPE = "GMLVQ"         # [RandomForest, SVC, Ensemble, Bagging, NaiveBayes, ESN]
-SIGNAL_LENGTH = 11
-NO_LEAKAGE_CROSSVALIDATION = False
+
 
 
 def log_results(params, metrics):
@@ -33,34 +33,22 @@ if __name__ == '__main__':
     start_time = time.time()
     print("Starting..")
 
-    #feature_stationarity = np.zeros(12)
-#
-    #for i, recording in enumerate(D[0]):
-    #    for j, feature in enumerate(recording):
-    #        stationarityTest = adfuller(D[0][i][j], autolag='AIC')
-    #        if stationarityTest[1] <= 0.05:
-    #            feature_stationarity[j] += 1
-    #
-    ## Check the value of p-values
-    #print(feature_stationarity)
-
-
     D = preprocessing.get_data(label_type=LABEL_TYPE, preproccessing_steps=PREPROCESSING_STEPS)
 
     if MODEL_TYPE == "RandomForest":
-        params, metrics, trained_model = model_layer.random_forest(D)
+        params, metrics, trained_model,_ = model_layer.random_forest(D)
     elif MODEL_TYPE == "SVC":
-        params, metrics, trained_model = model_layer.support_vector_machine(D)
+        params, metrics, trained_model,_ = model_layer.support_vector_machine(D)
     elif MODEL_TYPE == "Ensemble":
-        params, metrics, trained_model = model_layer.ensemble_classifier(D)
+        params, metrics, trained_model,_ = model_layer.ensemble_classifier(D)
     elif MODEL_TYPE == "Bagging":
-        params, metrics, trained_model = model_layer.bagging_classifier(D)
+        params, metrics, trained_model,_ = model_layer.bagging_classifier(D)
     elif MODEL_TYPE == "NaiveBayes":
-        params, metrics, trained_model = model_layer.naive_bayes(D)
+        params, metrics, trained_model,_ = model_layer.naive_bayes(D)
     elif MODEL_TYPE == "ESN":
-        model_layer.echo_state_network(D)
+        params, metrics, trained_model,_ = model_layer.echo_state_network(np.asarray(D))
     elif MODEL_TYPE == "GMLVQ":
-        params, metrics, trained_model = model_layer.gmlvq(D)
+        params, metrics, trained_model,_ = model_layer.gmlvq(D)
     else:
         exit("Please specify a model")
 
@@ -70,3 +58,16 @@ if __name__ == '__main__':
 
     end_time = time.time()
     print(f'\nElapsed time: {end_time - start_time}')
+
+
+
+#feature_stationarity = np.zeros(12)
+#
+    #for i, recording in enumerate(D[0]):
+    #    for j, feature in enumerate(recording):
+    #        stationarityTest = adfuller(D[0][i][j], autolag='AIC')
+    #        if stationarityTest[1] <= 0.05:
+    #            feature_stationarity[j] += 1
+    #
+    ## Check the value of p-values
+    #print(feature_stationarity)

@@ -1,0 +1,1 @@
+['pad', 'truncate', 'pca', 'flatten', 'onehot-to-labels']

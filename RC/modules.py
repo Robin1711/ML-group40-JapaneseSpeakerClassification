@@ -2,31 +2,15 @@
 import numpy as np
 import time
 from sklearn.linear_model import Ridge
-from sklearn.metrics import accuracy_score, f1_score
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
 from scipy.spatial.distance import pdist, cdist, squareform
+from sklearn.preprocessing import OneHotEncoder
 
 # Custom imports
 from RC.reservoir import Reservoir
 from RC.tensorPCA import tensorPCA
-
-
-def compute_test_scores(pred_class, Yte):
-    """
-    Wrapper to compute classification accuracy and F1 score
-    """
-    
-    true_class = np.argmax(Yte, axis=1)
-    
-    accuracy = accuracy_score(true_class, pred_class)
-    if Yte.shape[1] > 2:
-        f1 = f1_score(true_class, pred_class, average='weighted')
-    else:
-        f1 = f1_score(true_class, pred_class, average='binary')
-
-    return accuracy, f1
 
             
 class RC_model(object):
@@ -107,13 +91,33 @@ class RC_model(object):
             svm_gamma = bandwith of the RBF kernel (only for readout_type=='svm')
             svm_C = regularization for SVM hyperplane (only for readout_type=='svm')
         """
+        self.reservoir=reservoir     
+        self.n_internal_units=n_internal_units
+        self.spectral_radius=spectral_radius
+        self.leak=leak
+        self.connectivity=connectivity
+        self.input_scaling=input_scaling
+        self.noise_level=noise_level
         self.n_drop=n_drop
         self.bidir=bidir
-        self.dimred_method=dimred_method
+        self.circle=circle
+        self.dimred_method=dimred_method 
+        self.n_dim=n_dim
         self.mts_rep=mts_rep
-        self.readout_type=readout_type
+        self.w_ridge_embedding=w_ridge_embedding
+        self.readout_type=readout_type               
+        self.w_ridge=w_ridge              
+        self.mlp_layout=mlp_layout
+        self.num_epochs=num_epochs
+        self.w_l2=w_l2
+        self.nonlinearity=nonlinearity 
         self.svm_gamma=svm_gamma
-                        
+        self.svm_C=svm_C
+        
+        if leak is not None and spectral_radius is not None and spectral_radius > leak:
+            spectral_radius = leak
+
+
         # Initialize reservoir
         if reservoir is None:
             self._reservoir = Reservoir(n_internal_units=n_internal_units,
@@ -162,11 +166,47 @@ class RC_model(object):
             else:
                 raise RuntimeError('Invalid readout type')  
         
-        
-    def train(self, X, Y=None):
+    def get_params(self, deep=True):
+        return {'reservoir':self.reservoir,     
+'n_internal_units':self.n_internal_units,
+'spectral_radius':self.spectral_radius,
+'leak':self.leak,
+'connectivity':self.connectivity,
+'input_scaling':self.input_scaling,
+'noise_level':self.noise_level,
+'n_drop':self.n_drop,
+'bidir':self.bidir,
+'circle':self.circle,
+'dimred_method':self.dimred_method, 
+'n_dim':self.n_dim,
+'mts_rep':self.mts_rep,
+'w_ridge_embedding':self.w_ridge_embedding,
+'readout_type':self.readout_type,               
+'w_ridge':self.w_ridge,              
+'mlp_layout':self.mlp_layout,
+'num_epochs':self.num_epochs,
+'w_l2':self.w_l2,
+'nonlinearity':self.nonlinearity, 
+'svm_gamma':self.svm_gamma,
+'svm_C':self.svm_C}
+
+    def set_params(self, **params):
+        if not params:
+            return self
+
+    def fit(self, X, Y=None):
         
         time_start = time.time()
-        
+        # change y to one hot endoing
+        enc =  OneHotEncoder()
+        temp = []
+        for label in Y:
+            temp.append([label])
+        del Y
+        Y=temp
+        enc.fit(Y)
+        Y = enc.transform(Y).toarray()
+
         # ============ Compute reservoir states ============ 
         res_states = self._reservoir.get_states(X, n_drop=self.n_drop, bidir=self.bidir)
         
@@ -238,7 +278,7 @@ class RC_model(object):
         return tot_time
 
             
-    def test(self, Xte, Yte):
+    def predict(self, Xte):
 
         # ============ Compute reservoir states ============
         res_states_te = self._reservoir.get_states(Xte, n_drop=self.n_drop, bidir=self.bidir) 
@@ -305,5 +345,4 @@ class RC_model(object):
             pred_class = self.readout.predict(input_repr_te)
             pred_class = np.argmax(pred_class, axis=1)
             
-        accuracy, f1 = compute_test_scores(pred_class, Yte)
-        return accuracy, f1
+        return pred_class

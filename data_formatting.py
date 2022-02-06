@@ -97,7 +97,7 @@ Returns:
 def transpose(data):
     transposed_data = list()
     for entry in data:
-        transposed_entry = [list() for _ in range(0, CHANNELS)]
+        transposed_entry = [list() for _ in range(0, len(data[0][0]))]
         for energies in entry:
             for channel, energy in enumerate(energies):
                 transposed_entry[channel].append(energy)
