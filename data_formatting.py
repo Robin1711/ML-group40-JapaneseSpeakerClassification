@@ -1,5 +1,5 @@
 """
-Data analysis, but more preprocessing eigenlijk
+Data Analysis / Preprocessing
 includes methods for
 - Truncation of the data
 - Padding data (with 0's or noise)
